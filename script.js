@@ -171,10 +171,15 @@ if(c.any&&c.any.some(used)){if(p.v.some(v=>v<M))S.pend=true;else S.log.push('<li
 if(!S.pend)fin();else render()}
 function bonus(t){apply(S.pl[cur()],TK[t],2);fin()}
 function fin(){const p=S.pl[cur()],c=EV[S.card];S.pend=false;p.used.push(c.n);S.disc.push(S.card);while(p.hand.length<7&&(S.deck.length||S.disc.length))draw(p);S.ph='result';render()}
-function nxt(){const p=S.pl[cur()];if(S.ph=='result'&&p.v.every(v=>v>=M)){S.win=cur();S.ph='end';return render()}
+function nxt(){advanceTurn()}
+function advanceTurn(){const p=S.pl[cur()];if(S.ph=='result'&&p.v.every(v=>v>=M)){S.win=cur();S.ph='end';return render()}
 S.pos++;if(S.pos>=S.n){S.ph='sum';S.eq=bal();return render()}S.ph=(S.n==1||S.online)?'turn':'pass';render()}
 function nr(){const w=S.pl.findIndex(q=>q.v.every(v=>v>=M));if(w>=0){S.win=w;S.ph='end';return render()}S.pos=0;S.round++;S.color=null;S.rl=[];S.trend=rt();S.ph=(S.n==1||S.online)?'turn':'pass';render()}
-function skip(){S.card=null;nxt()}
+function skip(){
+  if(S?.ph!=='turn'||!S.color||S.pend||S.pl[cur()].hand.some(i=>EV[i].c===S.color))return;
+  S.card=null;
+  advanceTurn();
+}
 const rt=()=>TK[Math.floor(Math.random()*4)];
 function bal(){const o=[];S.pl.forEach((q,i)=>{const mx=Math.max(...q.v),mn=Math.min(...q.v),t=q.v.indexOf(mn);if(mx-mn<=1&&mn>=2&&q.v[t]<M){q.v[t]++;o.push([i,t])}});return o}
 const G={T:'Você investiu na carreira. Resultado vem da constância.',E:'Aprender hoje abre portas amanhã.',B:'Cuidar de si sustenta todo o resto.',V:'Vínculos e tempo de qualidade também são conquistas.'},L={T:'O trabalho pesou. Faltou planejamento?',E:'Os estudos ficaram para trás: ainda dá tempo de recuperar.',B:'O bem-estar caiu. Corpo e mente pedem atenção.',V:'A vida pessoal perdeu espaço. Quem ficou de fora?'},Q=['Qual escolha desta rodada você repetiria na vida real?','Que trilha você está negligenciando agora?','Como o bem-estar influencia seus outros resultados?','O que você sacrificaria hoje para ganhar amanhã?','Quem te ajuda a manter o equilíbrio?'],PN={T:'Foco na carreira',E:'Mente curiosa',B:'Cuidado consigo',V:'Coração em primeiro lugar'};
@@ -195,8 +200,9 @@ h=`<div class="bar"><span class="pill">Rodada ${S.round+1}</span><span class="pi
 if(S.pend)h+=`<h3>Bônus +2: escolha a trilha</h3><div class="colors">${TK.map((k,t)=>p.v[t]<M?`<button class="btn" style="background:${TC[k]}" onclick="bonus(${t})">${TN[t]} (${p.v[t]})</button>`:'').join('')}</div>`;
 else{if(lead)h+=`<h3>Escolha a cor desta rodada</h3><div class="colors">${TK.map(k=>`<button class="btn" style="background:${TC[k]}" onclick="pick('${k}')">${CN[k]} · ${TN[ki(k)]} (${p.hand.filter(i=>EV[i].c==k).length})</button>`).join('')}</div>`;
 else h+=`<h3>Jogue uma carta ${CN[S.color].toLowerCase()}</h3>`;
+if(S.color&&!has)h+=`<p class="center"><button class="btn" onclick="skip()">Sem carta da cor: passar a vez</button></p>`;
 h+=`<div class="hand">`+p.hand.map((ci,i)=>S.color&&EV[ci].c==S.color?cardH(ci,'go','button').replace('<button','<button onclick="play('+i+')"'):cardH(ci,'off')).join('')+`</div>`;
-if(S.color&&!has)h+=`<p class="center"><button class="btn" onclick="skip()">Sem carta da cor: passar a vez</button></p>`}}
+}}
 else if(S.ph=='sum')h=sumH();else if(S.ph=='result')h=`<div class="center"><h3>${p.name} jogou</h3>${cardH(S.card,'big')}<ul class="log">${S.log.join('')}</ul><button class="btn" onclick="nxt()">Continuar</button></div>`;
 else h=`<div class="center" style="padding:20px 0"><p style="font-size:56px;margin:0">🏆</p><h2>${p.name} venceu!</h2><p class="rules">Concluiu as quatro trilhas em ${S.round+1} rodadas.</p>${prof()}<button class="btn" onclick="resetGame()">Jogar de novo</button></div>`;
 $('panel').innerHTML=h}

@@ -268,3 +268,26 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.targe
 if($('board')&&$('panel'))render();
 
 function resetGame(){if(S?.online){choicesOnline.leave();return}S=null;render()}
+
+/* Menu lateral: o topo vira uma gaveta que abre pelo botão ☰ e não cobre o tabuleiro. */
+(function(){
+  const nav=document.querySelector('.nav');if(!nav)return;
+  nav.id='menu-lateral';
+  const btn=document.createElement('button');
+  btn.className='menu-btn';btn.type='button';btn.textContent='☰';
+  btn.setAttribute('aria-label','Abrir menu');btn.setAttribute('aria-controls','menu-lateral');btn.setAttribute('aria-expanded','false');
+  const close=document.createElement('button');
+  close.className='menu-close';close.type='button';close.textContent='✕';close.setAttribute('aria-label','Fechar menu');
+  const back=document.createElement('div');back.className='menu-back';
+  nav.prepend(close);
+  document.body.append(btn,back);
+  const set=open=>{
+    document.body.classList.toggle('menu-open',open);
+    btn.setAttribute('aria-expanded',String(open));
+    (open?close:btn).focus({preventScroll:true});
+  };
+  btn.onclick=()=>set(true);
+  close.onclick=back.onclick=()=>set(false);
+  nav.addEventListener('click',e=>{if(e.target.closest('a'))document.body.classList.remove('menu-open')});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('menu-open'))set(false)});
+})();

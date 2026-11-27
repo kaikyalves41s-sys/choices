@@ -163,6 +163,9 @@ S.pl.forEach(p=>{for(let i=0;i<7;i++)draw(p)});render()}
 function begin(){S.ph=(S.n==1||S.online)?'turn':'pass';render()}
 function pick(k){S.color=k;render()}
 function apply(p,k,d){const i=ki(k);if(d>0&&S.card!=null&&EV[S.card].c==S.trend)d++;if(p.v[i]>=M){S.log.push(`<li>${TN[i]}: concluída e imune</li>`);return}const o=p.v[i];p.v[i]=Math.max(0,Math.min(M,o+d));S.rl.push([cur(),i,p.v[i]-o]);S.log.push(`<li>${TN[i]}: ${o} → ${p.v[i]} <span class="${d>0?'up':'dn'}">(${d>0?'+':''}${d})</span>${p.v[i]>=M?' 🎉 trilha concluída!':''}</li>`)}
+var sel=null;
+function selectCard(i){sel=(sel===i||i==null)?null:i;render()}
+function confirmPlay(){if(sel==null)return;const i=sel;sel=null;play(i)}
 function play(i){const p=S.pl[cur()],ci=p.hand[i],c=EV[ci];if(c.c!=S.color)return;p.hand.splice(i,1);p.cnt[c.c]++;S.card=ci;S.log=[];S.pend=false;
 c.ef.forEach(([k,d])=>apply(p,k,d));
 const used=n=>p.used.includes(n);
@@ -205,15 +208,17 @@ if(S.online&&S.ph!=='end'&&!choicesOnline.canAct()){
   onlineHand();
   return;
 }
+if(S.ph!='turn'||S.pend||S.color==null||!p||EV[p.hand[sel]]?.c!==S.color)sel=null;
 if(S.ph=='prep')h=`<h2>Cartas iniciais</h2><p class="rules">Os valores da carta sorteada definem a posição inicial de cada jogador.</p><div class="prep">`+S.pl.map((q,i)=>`<div class="pcard" style="--c:${TC[PC[i]]}"><h4>${q.name}</h4><div>${TK.map((k,t)=>`<span class="ch" style="background:${TC[k]}">${TN[t].split(' ')[0]} ${q.v[t]}</span>`).join('')}</div></div>`).join('')+`</div><p class="center"><button class="btn" onclick="begin()">Iniciar rodada 1</button></p>`;
 else if(S.ph=='pass')h=`<div class="center" style="padding:40px 0"><p class="rules">Rodada ${S.round+1}${S.pos==0?' · você escolhe a cor':''}</p><h2>Passe o aparelho para<br>${p.name}</h2><p><button class="btn" onclick="S.ph='turn';render()">Estou pronto</button></p></div>`;
 else if(S.ph=='turn'){const lead=S.pos==0&&S.color==null,has=p.hand.some(i=>EV[i].c==S.color);
 h=`<div class="bar"><span class="pill">Rodada ${S.round+1}</span><span class="pill">Vez de ${p.name}</span><span class="pill" style="border-color:${TC[S.trend]}">📈 Tendência: ${CN[S.trend]} +1 nos ganhos</span>${S.color?`<span class="pill" style="border-color:${TC[S.color]}">Cor: ${CN[S.color]}</span>`:''}</div>`;
 if(S.pend)h+=`<h3>Bônus +2: escolha a trilha</h3><div class="colors">${TK.map((k,t)=>p.v[t]<M?`<button class="btn" style="background:${TC[k]}" onclick="bonus(${t})">${TN[t]} (${p.v[t]})</button>`:'').join('')}</div>`;
 else{if(lead)h+=`<h3>Escolha a cor desta rodada</h3><div class="colors">${TK.map(k=>`<button class="btn" style="background:${TC[k]}" onclick="pick('${k}')">${CN[k]} · ${TN[ki(k)]} (${p.hand.filter(i=>EV[i].c==k).length})</button>`).join('')}</div>`;
-else h+=`<h3>Jogue uma carta ${CN[S.color].toLowerCase()}</h3>`;
+else h+=`<h3>Escolha uma carta ${CN[S.color].toLowerCase()}</h3>`;
 if(S.color&&!has)h+=`<p class="center"><button class="btn" onclick="skip()">Sem carta da cor: passar a vez</button></p>`;
-showHand(p.hand.map((ci,i)=>S.color&&EV[ci].c==S.color?cardH(ci,'go','button').replace('<button','<button onclick="play('+i+')"'):cardH(ci,S.color?'off':'')).join(''));
+const bar=sel!=null?`<div class="hand-actions"><span>Selecionada: ${EV[p.hand[sel]].n}</span><button class="btn" onclick="confirmPlay()">Confirmar jogada</button><button class="btn alt" onclick="selectCard(null)">Escolher outra carta</button></div>`:'';
+showHand(p.hand.map((ci,i)=>S.color&&EV[ci].c==S.color?cardH(ci,'go'+(sel===i?' sel':''),'button').replace('<button','<button onclick="selectCard('+i+')" aria-pressed="'+(sel===i)+'"'):cardH(ci,S.color?'off':'')).join('')+bar);
 }}
 else if(S.ph=='sum')h=sumH();else if(S.ph=='result')h=`<div class="center"><h3>${p.name} jogou</h3>${cardH(S.card,'big')}<ul class="log">${S.log.join('')}</ul><button class="btn" onclick="nxt()">Continuar</button></div>`;
 else h=`<div class="center" style="padding:20px 0"><p style="font-size:56px;margin:0">🏆</p><h2>${p.name} venceu!</h2><p class="rules">Concluiu as quatro trilhas em ${S.round+1} rodadas.</p>${prof()}<button class="btn" onclick="resetGame()">Jogar de novo</button></div>`;

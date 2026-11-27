@@ -93,6 +93,7 @@ const choicesOnline = (() => {
     unsubscribe?.();
     ref = target;
     S = null;
+    showHand();
     show();
     $('panel').textContent = 'Aguardando a sala online…';
     unsubscribe = api.onSnapshot(target, snapshot => {

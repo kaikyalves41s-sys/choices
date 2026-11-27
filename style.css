@@ -135,18 +135,24 @@ footer{text-align:center;padding:30px;color:var(--mut);border-top:1px solid var(
   .play-page #online p:last-child:empty{display:none}
 }
 
-/* Uma única fileira em toda a tela de jogo, inclusive no modo local. */
-#panel .hand {
-  display: grid;
-  grid-template-rows: auto;
-  grid-auto-flow: column;
-  grid-auto-columns: max-content;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  padding: 6px 2px 12px;
+/* A mão ocupa toda a extensão da tela de jogo. */
+.play-heading,.play-layout{max-width:none}
+.play-page #board svg{max-height:min(45vh,420px)}
+#player-hand{grid-column:1/-1;min-width:0}
+#player-hand .hand{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(164px,100%),1fr));
+  justify-items:center;
+  overflow:visible;
+  margin-bottom:0;
+  padding:4px 0;
 }
-#panel .hand > .card {
-  scroll-snap-align: start;
+#player-hand .card{--u:.82;max-width:100%}
+@media(max-width:860px){
+  .play-controls{grid-row:auto}
+  .play-page #board svg{max-height:min(38vh,320px)}
+}
+@media(max-width:600px){
+  #player-hand .hand{grid-template-columns:repeat(auto-fit,minmax(min(132px,100%),1fr))}
+  #player-hand .card{--u:.66}
 }

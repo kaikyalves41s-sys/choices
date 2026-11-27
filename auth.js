@@ -16,7 +16,13 @@ const choicesAuth = (() => {
     'auth/operation-not-allowed':'Esse método de login ainda não foi ativado no Firebase (Authentication › Método de login).',
     'auth/unauthorized-domain':'Este endereço do site não está autorizado no Firebase (Authentication › Configurações › Domínios autorizados).',
     'auth/too-many-requests':'Muitas tentativas. Aguarde um pouco e tente de novo.',
-    'auth/network-request-failed':'Sem conexão. Verifique a internet.'
+    'auth/network-request-failed':'Sem conexão. Verifique a internet.',
+    'auth/account-exists-with-different-credential':'Esse e-mail já tem conta com senha. Entre com e-mail e senha.',
+    'auth/operation-not-supported-in-this-environment':'Este navegador não permite o login com Google aqui. Abra o site no Chrome ou Safari (não dentro do WhatsApp/Instagram).',
+    'auth/web-storage-unsupported':'O navegador está bloqueando cookies/armazenamento. Libere e tente de novo.',
+    'auth/internal-error':'Erro interno do login. Confira se o Google está ativado no Firebase e se o domínio está autorizado.',
+    'auth/invalid-api-key':'A chave do Firebase em firebase-config.js é inválida.',
+    'auth/api-key-not-valid':'A chave do Firebase em firebase-config.js é inválida.'
   };
   const safe = v => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
   const $id = id => document.getElementById(id);
@@ -91,9 +97,13 @@ const choicesAuth = (() => {
     await mod.updateProfile(created.user, {displayName: (field('login-name') || email.split('@')[0]).slice(0, 14)});
     done(created.user);
   });
+  // A janela do Google precisa abrir direto do toque no botão: sem "await" antes (Safari e celulares bloqueiam).
   const google = () => guard(async () => {
-    await ready;
-    done((await mod.signInWithPopup(session, new mod.GoogleAuthProvider())).user);
+    if (location.protocol === 'file:') throw Error('O login com Google não funciona com o arquivo aberto direto do computador. Abra pelo site publicado ou por http://localhost.');
+    if (!session) await ready;
+    const provider = new mod.GoogleAuthProvider();
+    provider.setCustomParameters({prompt: 'select_account'});
+    done((await mod.signInWithPopup(session, provider)).user);
   });
   const reset = () => guard(async () => {
     await ready;

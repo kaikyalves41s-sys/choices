@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /choicesRooms/{code} {
+      function signedIn() { return request.auth != null; }
+      function next() { return request.resource.data; }
+      function prior() { return resource.data; }
+      function validName(name) { return name is string && name.size() > 0 && name.size() <= 14; }
+      function isLobby() { return prior().state == ''; }
+      function joining() {
+        return isLobby() && !(request.auth.uid in prior().members) &&
+          prior().members.size() < 4 &&
+          next().diff(prior()).affectedKeys().hasOnly(['members','names']) &&
+          next().members == prior().members.concat([request.auth.uid]) &&
+          next().names is list && next().names.size() == prior().names.size() + 1 &&
+          validName(next().names[prior().names.size()]) &&
+          next().names == prior().names.concat([next().names[prior().names.size()]]);
+      }
+      function moving() {
+        return prior().members.size() >= 2 &&
+          request.auth.uid == prior().members[prior().actorIndex] &&
+          next().diff(prior()).affectedKeys().hasOnly(['state','revision','actorIndex']) &&
+          next().state is string && next().state.size() > 0 && next().state.size() < 90000 &&
+          next().revision == prior().revision + 1 && next().actorIndex is int &&
+          next().actorIndex >= 0 && next().actorIndex < prior().members.size() &&
+          (!isLobby() || (request.auth.uid == prior().host && next().actorIndex == 0));
+      }
+      allow get: if signedIn() &&
+        (!exists(/databases/$(database)/documents/choicesRooms/$(code)) ||
+          isLobby() || request.auth.uid in prior().members);
+      allow create: if signedIn() && code.matches('^[A-F0-9]{16}$') &&
+        next().keys().hasOnly(['host','members','names','duration','state','revision','actorIndex']) &&
+        next().host == request.auth.uid && next().members == [request.auth.uid] &&
+        next().names is list && next().names.size() == 1 && validName(next().names[0]) &&
+        next().duration in [6,8,10] && next().state == '' && next().revision == 0 && next().actorIndex == 0;
+      allow update: if signedIn() && (joining() || moving());
+    }
+  }
+}

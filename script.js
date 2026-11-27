@@ -186,7 +186,7 @@ const G={T:'Você investiu na carreira. Resultado vem da constância.',E:'Aprend
 function sumH(){let h=`<h3>Resumo da rodada ${S.round+1}</h3><ul class="log">`;S.pl.forEach((q,i)=>{const net=[0,0,0,0];S.rl.forEach(([pi,t,d])=>{if(pi==i)net[t]+=d});const mx=Math.max(...net),mn=Math.min(...net),ph=mn<0&&-mn>=mx?L[TK[net.indexOf(mn)]]:mx>0?G[TK[net.indexOf(mx)]]:'Rodada de pausa: não jogar também é uma escolha.';h+=`<li><b>${q.name}</b> ${net.map((d,t)=>d?`<span class="ch" style="background:${TC[TK[t]]}">${TN[t].split(' ')[0]} ${d>0?'+':''}${d}</span>`:'').join('')}<br><i>${ph}</i></li>`});S.eq.forEach(([i,t])=>{h+=`<li>⚖️ <b>${S.pl[i].name}</b> manteve as trilhas equilibradas: +1 em ${TN[t]}</li>`});return h+`</ul><p class="rules">💬 ${Q[S.round%Q.length]}</p><div class="qt">${FQ[(S.round*3+1)%FQ.length]}</div><p class="center"><button class="btn" onclick="nr()">Próxima rodada</button></p>`}
 function prof(){return'<ul class="log">'+S.pl.map(q=>{const c=Object.entries(q.cnt).sort((a,b)=>b[1]-a[1]);return`<li><b>${q.name}</b>: ${c[0][1]-c[3][1]<=2?'Equilibrista':PN[c[0][0]]}</li>`}).join('')+'</ul><p class="rules">💬 Qual escolha mais mudou o seu jogo?</p><div class="qt">'+FQ[Math.floor(Math.random()*FQ.length)]+'</div>'}
 function onlineHand(){
-  const player=S.pl[choicesOnline.playerIndex()];
+  const player=S.pl[choicesOnline.playerIndex?.()];
   if(!player?.hand.length)return '';
   return `<h3>Minha mão</h3><div class="hand">${player.hand.map(card=>cardH(card)).join('')}</div>`;
 }
@@ -206,7 +206,7 @@ if(S.pend)h+=`<h3>Bônus +2: escolha a trilha</h3><div class="colors">${TK.map((
 else{if(lead)h+=`<h3>Escolha a cor desta rodada</h3><div class="colors">${TK.map(k=>`<button class="btn" style="background:${TC[k]}" onclick="pick('${k}')">${CN[k]} · ${TN[ki(k)]} (${p.hand.filter(i=>EV[i].c==k).length})</button>`).join('')}</div>`;
 else h+=`<h3>Jogue uma carta ${CN[S.color].toLowerCase()}</h3>`;
 if(S.color&&!has)h+=`<p class="center"><button class="btn" onclick="skip()">Sem carta da cor: passar a vez</button></p>`;
-h+=`<div class="hand">`+p.hand.map((ci,i)=>S.color&&EV[ci].c==S.color?cardH(ci,'go','button').replace('<button','<button onclick="play('+i+')"'):cardH(ci,'off')).join('')+`</div>`;
+h+=`${S.online?'<h3>Minha mão</h3>':''}<div class="hand">`+p.hand.map((ci,i)=>S.color&&EV[ci].c==S.color?cardH(ci,'go','button').replace('<button','<button onclick="play('+i+')"'):cardH(ci,S.color?'off':'')).join('')+`</div>`;
 }}
 else if(S.ph=='sum')h=sumH();else if(S.ph=='result')h=`<div class="center"><h3>${p.name} jogou</h3>${cardH(S.card,'big')}<ul class="log">${S.log.join('')}</ul><button class="btn" onclick="nxt()">Continuar</button></div>`;
 else h=`<div class="center" style="padding:20px 0"><p style="font-size:56px;margin:0">🏆</p><h2>${p.name} venceu!</h2><p class="rules">Concluiu as quatro trilhas em ${S.round+1} rodadas.</p>${prof()}<button class="btn" onclick="resetGame()">Jogar de novo</button></div>`;

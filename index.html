@@ -8,17 +8,17 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="nav"><span class="logo">CHOICES</span><nav><a href="#como">Como jogar</a><a href="#jogar">Jogar</a><a href="#cartas">Cartas</a><a href="#reflexoes">Reflexões</a><a href="#uso">Aplicações</a></nav><button class="btn alt" id="th" aria-label="Alternar tema">◐ Tema</button></header>
-<section class="hero"><div class="dots"><span style="background:#1f5fbf"></span><span style="background:#f2b705;animation-delay:.4s"></span><span style="background:#12a150;animation-delay:.8s"></span><span style="background:#c21f1f;animation-delay:1.2s"></span></div><h1>CHOICES</h1><p>O jogo de tabuleiro sobre equilibrar trabalho, estudo, bem-estar e vida pessoal. Cada escolha sobe uma trilha e pode custar outra.</p><div class="hq" id="hq"></div><a class="btn cta" style="background:#f2b705;color:#14213d" href="#jogar">Jogar agora</a><a class="btn alt cta" href="#cartas">Ver as cartas</a></section>
+<header class="nav"><span class="logo">CHOICES</span><nav><a href="#como">Como jogar</a><a href="jogar.html">Jogar</a><a href="cartas.html">Cartas</a><a href="#reflexoes">Reflexões</a><a href="#uso">Aplicações</a></nav><button class="btn alt" id="th" aria-label="Alternar tema">◐ Tema</button></header>
+<section class="hero"><div class="dots"><span style="background:#1f5fbf"></span><span style="background:#f2b705;animation-delay:.4s"></span><span style="background:#12a150;animation-delay:.8s"></span><span style="background:#c21f1f;animation-delay:1.2s"></span></div><h1>CHOICES</h1><p>O jogo de tabuleiro sobre equilibrar trabalho, estudo, bem-estar e vida pessoal. Cada escolha sobe uma trilha e pode custar outra.</p><div class="hq" id="hq"></div><a class="btn cta" style="background:#f2b705;color:#14213d" href="jogar.html">Jogar agora</a><a class="btn alt cta" href="cartas.html">Ver as cartas</a></section>
 <section class="sec" id="como"><h2 class="st">Como jogar</h2><p class="rules">Jogue no mesmo aparelho ou em uma sala online com 2 a 4 jogadores. Vence quem concluir as quatro trilhas primeiro.</p><div class="grid3"><div class="box step rv"><b>1</b>Cada jogador começa com uma carta inicial da cor do seu quadrante e 7 cartas de evento.</div><div class="box step rv"><b>2</b>Quem abre a rodada escolhe uma cor. Todos jogam uma carta dessa cor; quem não tem, passa.</div><div class="box step rv"><b>3</b>Cada carta sobe e desce trilhas. Depois de jogar, compre até ter 7 cartas.</div><div class="box step rv"><b>4</b>Ao fim de cada rodada: resumo, frase de reflexão, tendência de mercado e bônus de equilíbrio.</div></div></section>
-<section class="sec" id="jogar" style="padding-bottom:0"><h2 class="st">Jogue agora</h2><p class="rules">Escolha uma partida local ou convide amigos para uma sala online.</p></section>
-<section class="sec" style="padding-block:12px"><div class="box" id="online"></div></section>
-<main><section class="box" id="board"></section><aside class="box" id="panel"></aside></main>
-<section class="sec" id="cartas"><h2 class="st">As 60 cartas de evento</h2><p class="rules">Cada cor é uma área da vida. Filtre e conheça os efeitos.</p><div class="flt" id="flt"></div><div class="gal" id="gal"></div></section>
 <section class="sec" id="reflexoes" style="text-align:center"><h2 class="st">Para pensar entre uma jogada e outra</h2><div class="qbig" id="qb"></div><button class="btn" onclick="showQ()">Outra reflexão</button></section>
 <section class="sec" id="uso"><h2 class="st">Onde o CHOICES pode ser usado</h2><div class="grid3"><div class="box rv"><h3>Escolas</h3><p class="rules">Projeto de vida, educação socioemocional e conversas sobre hábitos de estudo.</p></div><div class="box rv"><h3>Empresas</h3><p class="rules">Treinamentos sobre qualidade de vida, prioridades e liderança, com as perguntas de debate de cada rodada.</p></div><div class="box rv"><h3>Famílias e grupos</h3><p class="rules">Uma forma leve de conversar sobre escolhas, limites e equilíbrio.</p></div></div></section>
 <footer>CHOICES · protótipo digital do jogo de tabuleiro</footer>
 <script src="script.js"></script>
-<script src="online.js"></script>
+<script>
+  if (new URLSearchParams(location.search).has('sala') || location.hash === '#jogar') {
+    location.replace('jogar.html' + location.search);
+  }
+</script>
 </body>
 </html>

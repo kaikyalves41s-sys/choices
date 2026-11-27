@@ -211,9 +211,12 @@ const q=(t,a)=>`“${t}”${a?`<small>— ${a}</small>`:''}`;
 const FQ=[q('Uma vida sem reflexão não vale a pena ser vivida.','Sócrates'),q('Conhece-te a ti mesmo.','inscrição do Templo de Delfos'),q('Ninguém entra duas vezes no mesmo rio.','Heráclito'),q('Não nos falta tempo: desperdiçamos muito dele.','inspirado em Sêneca'),q('O que nos perturba não são as coisas, mas o modo como as interpretamos.','inspirado em Epicteto'),q('Escolher um caminho é renunciar a todos os outros.'),q('Equilíbrio não é dividir o tempo igualmente, é saber o que pede atenção agora.'),q('O descanso também faz parte do caminho.'),q('Quem só corre numa direção esquece de quem caminha ao lado.'),q('Todo sucesso carrega uma escolha que ninguém viu.'),q('O hábito de hoje é o resultado de amanhã.'),q('Cada casa que você sobe pode custar uma casa em outra trilha.')];
 let qi=0;function showQ(){['hq','qb'].forEach(id=>{const e=$(id);e.style.opacity=0;setTimeout(()=>{e.innerHTML=FQ[qi];e.style.opacity=1},350)});qi=(qi+1)%FQ.length}
 function showG(k){document.querySelectorAll('.flt .btn').forEach(b=>b.classList.toggle('on',b.dataset.k==k));$('gal').innerHTML=EV.map((c,i)=>!k||c.c==k?cardH(i):'').join('')}
+if($('flt')){
 $('flt').innerHTML=[['','Todas']].concat(TK.map(k=>[k,TN[ki(k)]])).map(([k,n])=>`<button class="btn ${k?'':'on'}" data-k="${k}" onclick="showG('${k}')">${n}</button>`).join('');
-showG('');showQ();setInterval(showQ,9000);
+showG('');
+}
+if($('hq')&&$('qb')){showQ();setInterval(showQ,9000);}
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});document.querySelectorAll('.rv').forEach(e=>io.observe(e));
-render();
+if($('board')&&$('panel'))render();
 
 function resetGame(){if(S?.online){choicesOnline.leave();return}S=null;render()}

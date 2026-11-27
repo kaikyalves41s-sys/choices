@@ -156,6 +156,15 @@ footer{text-align:center;padding:30px var(--pad);color:var(--mut);border-top:1px
 .pcard{width:150px;max-width:100%;border:6px solid var(--c);border-radius:14px;background:#e8f1fb;color:#1b2233;padding:9px 8px;display:flex;flex-direction:column;gap:6px;text-align:center;margin:auto}
 .pcard h4{margin:0;font:800 14px 'Bricolage Grotesque',sans-serif;text-transform:uppercase}
 
+/* Arte das cartas iniciais: quando a imagem carrega, ela substitui os chips de texto */
+.pcard.ok{width:170px;padding:6px;background:var(--c);gap:6px}
+.pcard.ok h4{color:#fff}
+.pcard.ok[style*="#f2b705"] h4{color:#1b2233}
+.pcard.ok .chips{display:none}
+.pcard .sart{display:block;width:100%;height:auto;aspect-ratio:693/982;border-radius:10px;background:#fff}
+.ini-gal{display:flex;flex-wrap:wrap;gap:clamp(8px,1.4vw,16px);justify-content:center;margin-top:8px}
+.ini-gal .pcard{margin:0}
+
 /* ---------- Partida online ---------- */
 #online label{display:grid;gap:4px;margin-top:10px;min-width:0}
 #online input{width:100%;max-width:24rem;min-width:0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}

@@ -188,6 +188,10 @@ S.pl.forEach((p,i)=>{h+=`<tr class="${S.ph!='end'&&S.ph!='prep'&&i==cur()?'me':'
 function chips(ef,x){return ef.map(([k,d])=>`<span class="ch" style="background:${TC[k]}">${TN[ki(k)].split(' ')[0]} ${d>0?'+':''}${d}</span>`).join('')}
 function cardH(i,cls,tag){const c=EV[i];let x=TXT[c.n]?'':c.any?`<span class="x">+2 em qualquer trilha se já jogou ${c.any.join(' ou ')}</span>`:c.pen?`<span class="x">−4 em Vida pessoal se já jogou ${c.pen}</span>`:'';
 return`<${tag||'div'} class="card ${cls||''}" style="--c:${TC[c.c]}"><span class="in"><h4>${c.n}</h4><img class="art" src="${ART_DIR}${slug(c.n)}.${ART_EXT}" alt="" onerror="this.remove()">${effT(c)}${x}</span></${tag||'div'}>`}
+// Carta inicial: usa a arte img/inicio-N.png (N = posição em ST + 1); sem arte, mostra só os valores.
+const START_ALT=v=>'Carta inicial: '+TN.map((n,t)=>n+' +'+v[t]).join(', ');
+function startH(idx,col,name,v){const img=idx>=0?`<img class="sart" src="${ART_DIR}inicio-${idx+1}.png" alt="${START_ALT(v)}" onload="this.closest('.pcard').classList.add('ok')" onerror="this.remove()">`:'';
+return`<div class="pcard" style="--c:${TC[col]}">${name?`<h4>${name}</h4>`:''}${img}<div class="chips">${TK.map((k,t)=>`<span class="ch" style="background:${TC[k]}">${TN[t].split(' ')[0]} ${v[t]}</span>`).join('')}</div></div>`}
 function draw(p){if(!S.deck.length){S.deck=sh(S.disc);S.disc=[]}if(S.deck.length)p.hand.push(S.deck.pop())}
 function setN(n){NP=n;render()}
 function start(names){const nm=names??[...document.querySelectorAll('.nm')].map((e,i)=>e.value.trim()||'Jogador '+(i+1));
@@ -242,7 +246,7 @@ if(S.online&&S.ph!=='end'&&!choicesOnline.canAct()){
   return;
 }
 if(S.ph!='turn'||S.pend||S.color==null||!p||EV[p.hand[sel]]?.c!==S.color)sel=null;
-if(S.ph=='prep')h=`<h2>Cartas iniciais</h2><p class="rules">Os valores da carta sorteada definem a posição inicial de cada jogador.</p><div class="prep">`+S.pl.map((q,i)=>`<div class="pcard" style="--c:${TC[PC[i]]}"><h4>${q.name}</h4><div>${TK.map((k,t)=>`<span class="ch" style="background:${TC[k]}">${TN[t].split(' ')[0]} ${q.v[t]}</span>`).join('')}</div></div>`).join('')+`</div><p class="center"><button class="btn" onclick="begin()">Iniciar rodada 1</button></p>`;
+if(S.ph=='prep')h=`<h2>Cartas iniciais</h2><p class="rules">Os valores da carta sorteada definem a posição inicial de cada jogador.</p><div class="prep">`+S.pl.map((q,i)=>startH(ST.findIndex(s=>s[0]==PC[i]&&s[1].every((v,t)=>v==q.v[t])),PC[i],q.name,q.v)).join('')+`</div><p class="center"><button class="btn" onclick="begin()">Iniciar rodada 1</button></p>`;
 else if(S.ph=='pass')h=`<div class="center" style="padding:40px 0"><p class="rules">Rodada ${S.round+1}${S.pos==0?' · você escolhe a cor':''}</p><h2>Passe o aparelho para<br>${p.name}</h2><p><button class="btn" onclick="S.ph='turn';render()">Estou pronto</button></p></div>`;
 else if(S.ph=='turn'){const lead=S.pos==0&&S.color==null,has=p.hand.some(i=>EV[i].c==S.color);
 h=`<div class="bar"><span class="pill">Rodada ${S.round+1}</span><span class="pill">Vez de ${p.name}</span><span class="pill" style="border-color:${TC[S.trend]}">📈 Tendência: ${CN[S.trend]} +1 nos ganhos</span>${S.color?`<span class="pill" style="border-color:${TC[S.color]}">Cor: ${CN[S.color]}</span>`:''}</div>`;
@@ -267,6 +271,7 @@ if($('flt')){
 $('flt').innerHTML=[['','Todas']].concat(TK.map(k=>[k,TN[ki(k)]])).map(([k,n])=>`<button class="btn ${k?'':'on'}" data-k="${k}" onclick="showG('${k}')">${n}</button>`).join('');
 showG('');
 }
+if($('ini'))$('ini').innerHTML=ST.map((c,i)=>startH(i,c[0],'',c[1])).join('');
 if($('hq')&&$('qb')){showQ();setInterval(showQ,9000);}
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});document.querySelectorAll('.rv').forEach(e=>io.observe(e));
 if($('board')&&$('panel'))render();

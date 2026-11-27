@@ -134,3 +134,17 @@ footer{text-align:center;padding:30px;color:var(--mut);border-top:1px solid var(
   .play-page #online label{margin-top:6px}
   .play-page #online p:last-child:empty{display:none}
 }
+
+@media(min-width:601px){
+  .play-page .hand{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    scroll-snap-type:x proximity;
+    padding:6px 2px 12px;
+  }
+  .play-page .hand .card{
+    flex:0 0 auto;
+    --u:.9;
+    scroll-snap-align:start;
+  }
+}

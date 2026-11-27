@@ -363,3 +363,17 @@ html section[id],html .play-page section[id]{scroll-margin-top:16px}
 /* Logo na tela inicial */
 .hero-logo{display:block;width:min(340px,72vw);height:auto;margin:0 auto 14px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Conta e janela de login */
+.nav #acct{display:grid;gap:8px;margin-top:auto;padding-top:12px}
+.nav #acct + #th{margin-top:8px}
+.nav #acct .btn{width:100%}
+.acct-name{color:#fff;font-weight:700;padding:0 4px;overflow-wrap:anywhere}
+#login-dlg{border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--ink);padding:clamp(14px,3vw,24px);width:min(26rem,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow-y:auto}
+#login-dlg::backdrop{background:#0009}
+#login-dlg h2{margin:0 0 6px}
+#login-dlg label{display:grid;gap:4px;margin-top:10px}
+#login-dlg input{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
+#login-dlg .btn{margin:0 6px 6px 0}
+#login-dlg p{overflow-wrap:anywhere}
+#login-dlg.busy{opacity:.7;pointer-events:none}

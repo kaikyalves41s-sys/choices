@@ -359,3 +359,7 @@ html section[id],html .play-page section[id]{scroll-margin-top:16px}
 #cartas{padding-top:68px}
 @media(prefers-reduced-motion:reduce){.nav,.menu-back{transition:none!important}}
 @media print{.menu-btn,.menu-back,.nav{display:none}}
+
+/* Logo na tela inicial */
+.hero-logo{display:block;width:min(340px,72vw);height:auto;margin:0 auto 14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}

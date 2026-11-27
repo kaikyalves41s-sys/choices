@@ -232,5 +232,6 @@ const choicesOnline = (() => {
     const snapshot = await api.getDoc(target);
     if (snapshot.exists() && snapshot.data().members.includes(uid)) watch(target);
   });
-  return {canAct, actorName, leave};
+  const playerIndex = () => room?.members.indexOf(uid) ?? -1;
+  return {canAct, actorName, playerIndex, leave};
 })();

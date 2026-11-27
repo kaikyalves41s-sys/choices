@@ -139,17 +139,46 @@ function sector(r1,r2,a1,a2){const A=pt(r1,a1),B=pt(r2,a1),C=pt(r2,a2),D=pt(r1,a
 // Cada jogador tem um quadrante; dentro dele, as trilhas seguem a ordem Vida pessoal, Trabalho, Bem-estar, Estudo (a partir do eixo do quadrante).
 const BOARD_IMG='img/tabuleiro.webp',BR=[169,282,328,376,422,469,516,563,610],BSLOT=['V','T','B','E'],BC=BR.slice(0,8).map((r,i)=>(r+BR[i+1])/2);
 function bpos(v){const b=Math.max(0,Math.min(8,v*8/M));if(b<1)return 148+(BC[0]-148)*b;const k=Math.floor(b);return k>=8?BC[7]:BC[k-1]+(BC[k]-BC[k-1])*(b-k)}
-function boardSVG(){const n=S?S.n:4,rd=Math.PI/180;let s='<svg viewBox="0 0 1600 1600" role="img" aria-label="Tabuleiro CHOICES">';
+var V3=true;
+function toggle3D(){V3=!V3;$('board').innerHTML=boardSVG()+score()}
+function pawn3(x,y,c,tx,lab){
+  const side='M-34 0V-11A34 13 0 0 1 34-11V0A34 13 0 0 1-34 0Z',body='M-22-11Q-16-52-8-64H8Q16-52 22-11A22 8 0 0 1-22-11Z';
+  return`<g transform="translate(${f(x)} ${f(y)})"><ellipse cx="8" cy="6" rx="40" ry="14" fill="#000" opacity=".45" filter="url(#pblur)"/>`+
+  `<path d="${side}" fill="${c}"/><path d="${side}" fill="url(#psh)"/>`+
+  `<ellipse cy="-11" rx="34" ry="13" fill="${c}"/><ellipse cy="-11" rx="34" ry="13" fill="#fff" opacity=".22"/>`+
+  `<path d="${body}" fill="${c}"/><path d="${body}" fill="url(#psh)"/>`+
+  `<ellipse cy="-64" rx="15" ry="5" fill="${c}"/><ellipse cy="-64" rx="15" ry="5" fill="#fff" opacity=".3"/>`+
+  `<circle cy="-84" r="21" fill="${c}"/><circle cy="-84" r="21" fill="url(#pgl)"/>`+
+  `<text y="-83" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="800" fill="${tx}" font-family="Bricolage Grotesque,sans-serif">${lab}</text></g>`}
+function boardSVG(){const n=S?S.n:4,rd=Math.PI/180,K=V3?.6:1,D=V3?44:0,H=1600*K+D+14;
+let s=`<svg viewBox="0 0 1600 ${f(H)}" role="img" aria-label="Tabuleiro CHOICES${V3?' em 3D':''}">`;
 const img=(x)=>`<image href="${BOARD_IMG}" x="0" y="0" width="1600" height="1600"${x||''}/>`;
-if(n>=4)s+=img();else{for(let p=0;p<4;p++){const a=QA[p],P=[0,45,90].map(d=>[800+1200*Math.cos((a+d)*rd),800+1200*Math.sin((a+d)*rd)]);
-s+=`<clipPath id="bq${p}"><path d="M800 800L${P.map(q=>f(q[0])+' '+f(q[1])).join('L')}Z"/></clipPath>`+img(` clip-path="url(#bq${p})" opacity="${p<n?1:.28}"`)}s+='<clipPath id="bc"><circle cx="800" cy="800" r="172"/></clipPath>'+img(' clip-path="url(#bc)"')}
-s+='<g transform="translate(800 800)">';
+let bp='';
+if(n>=4)bp+=img();else{for(let p=0;p<4;p++){const a=QA[p],P=[0,45,90].map(d=>[800+1200*Math.cos((a+d)*rd),800+1200*Math.sin((a+d)*rd)]);
+bp+=`<clipPath id="bq${p}"><path d="M800 800L${P.map(q=>f(q[0])+' '+f(q[1])).join('L')}Z"/></clipPath>`+img(` clip-path="url(#bq${p})" opacity="${p<n?1:.28}"`)}bp+='<clipPath id="bc"><circle cx="800" cy="800" r="172"/></clipPath>'+img(' clip-path="url(#bc)"')}
+if(V3){
+  s+=`<defs><g id="bp">${bp}</g>`+
+  `<filter id="bdark" x="-5%" y="-5%" width="110%" height="115%"><feColorMatrix type="matrix" values=".3 0 0 0 0  0 .3 0 0 0  0 0 .3 0 0  0 0 0 1 0"/></filter>`+
+  `<filter id="pblur" x="-40%" y="-80%" width="180%" height="260%"><feGaussianBlur stdDeviation="5"/></filter>`+
+  `<filter id="bblur" x="-10%" y="-100%" width="120%" height="300%"><feGaussianBlur stdDeviation="18"/></filter>`+
+  `<linearGradient id="psh" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset=".3" stop-color="#fff" stop-opacity=".3"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></linearGradient>`+
+  `<radialGradient id="pgl" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".8"/><stop offset=".35" stop-color="#fff" stop-opacity=".1"/><stop offset=".75" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></radialGradient></defs>`+
+  `<ellipse cx="800" cy="${f(H-34)}" rx="730" ry="44" fill="#000" opacity=".3" filter="url(#bblur)"/>`+
+  `<g filter="url(#bdark)">`;
+  for(let d=D;d>=4;d-=4)s+=`<use href="#bp" transform="translate(0 ${d}) scale(1 ${K})"/>`;
+  s+=`</g><use href="#bp" transform="scale(1 ${K})"/>`;
+}else s+=bp;
+s+=V3?`<g transform="scale(1 ${K}) translate(800 800)">`:'<g transform="translate(800 800)">';
+const pw=[];
 if(S){for(let p=0;p<n;p++){const a0=QA[p],act=S.pl[p];
 for(let t=0;t<4;t++){const k=BSLOT[t],ti=ki(k),v=act.v[ti],lit=Math.floor(Math.max(0,Math.min(8,v*8/M))+.5);
 for(let i=lit+1;i<=8;i++){const rm=(BR[i-1]+BR[i])/2,ins=(9/rm)/rd;s+=`<path d="${sector(BR[i-1]+2,BR[i]-2,a0+t*22.5+ins,a0+(t+1)*22.5-ins)}" fill="#fff" fill-opacity=".5"/>`}}
-for(let t=0;t<4;t++){const k=BSLOT[t],v=act.v[ki(k)],am=a0+t*22.5+11.25,m=pt(bpos(v),am),pc=TC[PC[p]];
-s+=`<g><circle cx="${f(m[0])}" cy="${f(m[1])}" r="30" fill="#1b2233"/><circle cx="${f(m[0])}" cy="${f(m[1])}" r="24" fill="${pc}"/><text x="${f(m[0])}" y="${f(m[1]+1)}" text-anchor="middle" dominant-baseline="central" font-size="28" font-weight="800" fill="${PC[p]=='E'?'#1b2233':'#fff'}" font-family="Bricolage Grotesque,sans-serif">${p+1}</text></g>`}}}
-return s+'</g></svg>'}
+for(let t=0;t<4;t++){const k=BSLOT[t],v=act.v[ki(k)],am=a0+t*22.5+11.25,m=pt(bpos(v),am),pc=TC[PC[p]],tx=PC[p]=='E'?'#1b2233':'#fff';
+if(V3)pw.push({x:800+m[0],y:800*K+m[1]*K,c:pc,tx,lab:p+1});
+else s+=`<g><circle cx="${f(m[0])}" cy="${f(m[1])}" r="30" fill="#1b2233"/><circle cx="${f(m[0])}" cy="${f(m[1])}" r="24" fill="${pc}"/><text x="${f(m[0])}" y="${f(m[1]+1)}" text-anchor="middle" dominant-baseline="central" font-size="28" font-weight="800" fill="${tx}" font-family="Bricolage Grotesque,sans-serif">${p+1}</text></g>`}}}
+s+='</g>';
+pw.sort((a,b)=>a.y-b.y).forEach(q=>{s+=pawn3(q.x,q.y,q.c,q.tx,q.lab)});
+return s+'</svg>'+`<p class="center view-toggle"><button class="btn alt" onclick="toggle3D()" aria-pressed="${V3}">${V3?'Vista plana':'Vista 3D'}</button></p>`}
 function score(){if(!S)return'';let h='<table><tr><th>Jogador</th>'+TK.map(k=>`<th>${TN[ki(k)].split(' ')[0]}</th>`).join('')+'</tr>';
 S.pl.forEach((p,i)=>{h+=`<tr class="${S.ph!='end'&&S.ph!='prep'&&i==cur()?'me':''}"><td><span class="dot" style="background:${TC[PC[i]]}"></span>${p.name}</td>`+p.v.map(v=>v>=M?'<td class="ok">✓</td>':`<td>${v}/${M}</td>`).join('')+'</tr>'});return h+'</table>'}
 function chips(ef,x){return ef.map(([k,d])=>`<span class="ch" style="background:${TC[k]}">${TN[ki(k)].split(' ')[0]} ${d>0?'+':''}${d}</span>`).join('')}

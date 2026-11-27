@@ -1,28 +1,81 @@
-:root{--bg:#f4f1ea;--panel:#fff;--ink:#1b2233;--mut:#667086;--line:#e2ddd0;--navy:#14213d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* ==========================================================
+   CHOICES — estilos responsivos
+   Breakpoints (mobile-first nas regras fluidas):
+   até 480px  celular pequeno
+   até 600px  celular
+   até 860px  celular grande / tablet em pé
+   861–1199   tablet deitado / notebook pequeno
+   1200+      notebook / PC
+   1600+      monitores grandes
+   ========================================================== */
+
+:root{
+  --bg:#f4f1ea;--panel:#fff;--ink:#1b2233;--mut:#667086;--line:#e2ddd0;--navy:#14213d;
+  --gap:clamp(10px,1.6vw,20px);
+  --pad:clamp(10px,2vw,20px);
+  --wrap:1280px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px)
+}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--panel:#1a2133;--ink:#eef1f7;--mut:#9aa4ba;--line:#2c364d}}
 :root[data-theme="dark"]{--bg:#0f1420;--panel:#1a2133;--ink:#eef1f7;--mut:#9aa4ba;--line:#2c364d}
-*{box-sizing:border-box}html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.45 Figtree,system-ui,sans-serif;min-height:100vh}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--ink);
+  font:clamp(15px,.9vw + 11px,17px)/1.45 Figtree,system-ui,sans-serif;
+  min-height:100vh;min-height:100dvh;
+  overflow-x:hidden;
+  padding-left:env(safe-area-inset-left,0px);
+  padding-right:env(safe-area-inset-right,0px)
+}
+img,svg{max-width:100%}
 h1,h2,h3{font-family:'Bricolage Grotesque',Figtree,sans-serif;margin:0}
+section[id]{scroll-margin-top:72px}
+
+/* ---------- Cabeçalhos antigos ---------- */
 header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--navy);color:#fff}
 header h1{font-size:24px;letter-spacing:.14em;font-weight:800}
 header small{opacity:.7;margin-left:10px;letter-spacing:0;font-family:Figtree}
-.btn{border:0;border-radius:10px;padding:11px 18px;font:700 15px Figtree,sans-serif;background:var(--navy);color:#fff;cursor:pointer}
+
+/* ---------- Botões ---------- */
+.btn{
+  border:0;border-radius:10px;padding:11px 18px;min-height:44px;
+  font:700 15px Figtree,sans-serif;background:var(--navy);color:#fff;cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent
+}
 .btn.alt{background:transparent;color:inherit;border:1px solid currentColor}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-main{display:grid;grid-template-columns:minmax(300px,1.1fr) minmax(320px,1fr);gap:18px;padding:18px;max-width:1200px;margin:auto}
-@media(max-width:860px){main{grid-template-columns:1fr;padding:12px}}
-.box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.btn:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #f2b705;outline-offset:2px}
+
+/* ---------- Layout base (página de jogo) ---------- */
+main{
+  display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);
+  gap:var(--gap);padding:var(--pad);
+  max-width:var(--wrap);margin:auto
+}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:clamp(10px,1.6vw,18px);min-width:0}
 #board svg{width:100%;height:auto;display:block}
-table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px}
+
+/* ---------- Tabela do placar ---------- */
+#board{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:clamp(12px,1.4vw,14px);margin-top:12px}
 th,td{padding:6px 4px;text-align:center;border-bottom:1px solid var(--line)}
-th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+th{font-size:clamp(10px,1.1vw,11px);text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
 td:first-child,th:first-child{text-align:left}
 tr.me td:first-child{font-weight:700}
 .dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .ok{color:#12a150;font-weight:700}
+
+/* ---------- Barra de status / pílulas ---------- */
 .bar{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:12px;font-size:14px;color:var(--mut)}
 .pill{padding:3px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);font-weight:600;color:var(--ink)}
+
+/* ---------- Mão / cartas / cores ---------- */
 .hand{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
 .ch{display:inline-block;border-radius:99px;padding:2px 9px;font:700 12px Figtree;color:#fff;margin:2px}
 .card.go{cursor:pointer;transform:translateY(-4px);box-shadow:0 6px 16px #0003}
@@ -30,40 +83,65 @@ tr.me td:first-child{font-weight:700}
 .colors{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
 .colors .btn{color:#fff;text-shadow:0 1px 2px #0004}
 .center{text-align:center}
-.rules{font-size:14px;color:var(--mut)}.rules li{margin:3px 0}
-input.nm{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin:4px 0}
-.np{display:flex;gap:8px;margin:10px 0}.np .btn{flex:1;background:var(--bg);color:var(--ink);border:2px solid var(--line)}.np .btn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.rules{font-size:14px;color:var(--mut)}
+.rules li{margin:3px 0}
+input.nm{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:16px;margin:4px 0}
+.np{display:flex;gap:8px;margin:10px 0}
+.np .btn{flex:1;background:var(--bg);color:var(--ink);border:2px solid var(--line)}
+.np .btn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .log{list-style:none;padding:0;margin:10px 0;text-align:left;font-size:15px}
-.log li{padding:6px 10px;border-radius:8px;background:var(--bg);margin:4px 0}
-.up{color:#12a150;font-weight:700}.dn{color:#c21f1f;font-weight:700}
-.prep{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-html{scroll-behavior:smooth}section[id]{scroll-margin-top:64px}
-.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;background:var(--navy);color:#fff;flex-wrap:wrap}
-.nav a{color:#fff;text-decoration:none;opacity:.8;margin:0 8px;font-weight:600;font-size:14px}.nav a:hover{opacity:1}
+.log li{padding:6px 10px;border-radius:8px;background:var(--bg);margin:4px 0;overflow-wrap:anywhere}
+.up{color:#12a150;font-weight:700}
+.dn{color:#c21f1f;font-weight:700}
+.prep{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(160px,100%),1fr));gap:10px}
+
+/* ---------- Navegação ---------- */
+.nav{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px var(--pad);background:var(--navy);color:#fff;flex-wrap:wrap
+}
+.nav a{color:#fff;text-decoration:none;opacity:.8;margin:0 8px;font-weight:600;font-size:14px;padding:8px 2px}
+.nav a:hover{opacity:1}
+.nav nav{display:flex;align-items:center;flex-wrap:wrap}
 .logo{font:800 22px 'Bricolage Grotesque',sans-serif;letter-spacing:.14em}
-.hero{background:linear-gradient(135deg,#14213d,#27407a);color:#fff;text-align:center;padding:72px 20px 64px}
-.hero h1{font-size:clamp(44px,10vw,88px);letter-spacing:.1em;font-weight:800;margin:10px 0}
-.hero p{max-width:620px;margin:12px auto;opacity:.9}
+
+/* ---------- Página inicial ---------- */
+.hero{background:linear-gradient(135deg,#14213d,#27407a);color:#fff;text-align:center;padding:clamp(40px,8vw,88px) var(--pad) clamp(40px,7vw,72px)}
+.hero h1{font-size:clamp(40px,10vw,96px);letter-spacing:.1em;font-weight:800;margin:10px 0;overflow-wrap:anywhere}
+.hero p{max-width:620px;margin:12px auto;opacity:.9;font-size:clamp(15px,1.2vw + 10px,19px)}
 .dots span{display:inline-block;width:18px;height:18px;border-radius:50%;margin:0 5px;animation:fl 3s ease-in-out infinite}
 @keyframes fl{50%{transform:translateY(-8px)}}
-.hq{min-height:84px;font-style:italic;transition:opacity .35s;max-width:640px;margin:22px auto;font-size:18px}
+.hq{min-height:84px;font-style:italic;transition:opacity .35s;max-width:640px;margin:22px auto;font-size:clamp(16px,1.6vw + 8px,20px)}
 .hq small,.qbig small{display:block;font-style:normal;opacity:.7;font-size:14px;margin-top:6px}
-.cta{display:inline-block;text-decoration:none;margin:4px}
-.sec{max-width:1100px;margin:auto;padding:48px 18px}
-.st{font-size:30px;margin-bottom:6px}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+.cta{display:inline-block;text-decoration:none;margin:4px;text-align:center}
+.sec{max-width:var(--wrap);margin:auto;padding:clamp(28px,5vw,56px) var(--pad)}
+.st{font-size:clamp(24px,3vw + 8px,36px);margin-bottom:6px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:var(--gap);margin-top:16px}
 .step b{font:800 30px 'Bricolage Grotesque',sans-serif;color:#f2b705;display:block}
-.rv{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}.rv.in{opacity:1;transform:none}
+.rv{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+.rv.in{opacity:1;transform:none}
 .flt{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
-.flt .btn{background:var(--panel);color:var(--ink);border:2px solid var(--line)}.flt .btn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.gal{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-.gal .card{transition:transform .2s}.gal .card:hover{transform:translateY(-6px) rotate(-1.5deg)}
+.flt .btn{background:var(--panel);color:var(--ink);border:2px solid var(--line)}
+.flt .btn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.gal{display:flex;flex-wrap:wrap;gap:clamp(8px,1.4vw,16px);justify-content:center}
+.gal .card{transition:transform .2s}
+.gal .card:hover{transform:translateY(-6px) rotate(-1.5deg)}
 .qt{border-left:4px solid #f2b705;padding:8px 14px;margin:12px 0;font-style:italic;text-align:left}
 .qt small{display:block;font-style:normal;opacity:.7}
-.qbig{font:600 clamp(20px,3.4vw,30px)/1.35 'Bricolage Grotesque',sans-serif;text-align:center;transition:opacity .35s;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px}
-footer{text-align:center;padding:30px;color:var(--mut);border-top:1px solid var(--line);font-size:14px}
-/* Carta: moldura colorida + painel branco, como a carta original (proporção 6,7 x 9,2) */
-.card{--u:1;width:calc(200px*var(--u));aspect-ratio:67/92;align-self:flex-start;display:flex;background:var(--c);border:0;border-radius:calc(16px*var(--u));padding:calc(10px*var(--u));font:inherit;color:#000;text-align:center}
+.qbig{
+  font:600 clamp(19px,3.4vw,30px)/1.35 'Bricolage Grotesque',sans-serif;
+  text-align:center;transition:opacity .35s;min-height:130px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px
+}
+footer{text-align:center;padding:30px var(--pad);color:var(--mut);border-top:1px solid var(--line);font-size:14px}
+
+/* ---------- Carta: moldura colorida + painel branco (proporção 6,7 x 9,2) ---------- */
+.card{
+  --u:1;width:calc(200px*var(--u));max-width:100%;aspect-ratio:67/92;align-self:flex-start;
+  display:flex;background:var(--c);border:0;border-radius:calc(16px*var(--u));
+  padding:calc(10px*var(--u));font:inherit;color:#000;text-align:center
+}
 .card .in{flex:1;min-height:0;display:flex;flex-direction:column;gap:calc(6px*var(--u));background:#fff;border-radius:calc(11px*var(--u));padding:calc(10px*var(--u)) calc(9px*var(--u));overflow:hidden}
 .card h4{margin:0;font:800 calc(15px*var(--u))/1.1 'Bricolage Grotesque',sans-serif;text-transform:uppercase;color:#000}
 .card .art{flex:1 1 0;min-height:0;width:100%;object-fit:contain;display:block}
@@ -71,34 +149,95 @@ footer{text-align:center;padding:30px;color:var(--mut);border-top:1px solid var(
 .card .s{display:block;font:700 calc(12.5px*var(--u))/1.25 Figtree,sans-serif;color:#000}
 .card .x{display:block;font-size:calc(10.5px*var(--u));color:#445;line-height:1.25}
 .card.big{--u:1.3;margin:10px auto}
+.card .original-wrap{gap:calc(9px*var(--u))}
+.card .original-wrap .s{font-size:calc(11.3px*var(--u));line-height:1.23;white-space:pre}
+
 /* Cartas iniciais (sorteio da posição) */
-.pcard{width:150px;border:6px solid var(--c);border-radius:14px;background:#e8f1fb;color:#1b2233;padding:9px 8px;display:flex;flex-direction:column;gap:6px;text-align:center;margin:auto}
+.pcard{width:150px;max-width:100%;border:6px solid var(--c);border-radius:14px;background:#e8f1fb;color:#1b2233;padding:9px 8px;display:flex;flex-direction:column;gap:6px;text-align:center;margin:auto}
 .pcard h4{margin:0;font:800 14px 'Bricolage Grotesque',sans-serif;text-transform:uppercase}
 
-/* Quebras de linha das cartas de referência. */
-.card .original-wrap{gap:calc(9px*var(--u))}
-.card .original-wrap .s{
-  font-size:calc(11.3px*var(--u));
-  line-height:1.23;
-  white-space:pre;
-}
-
+/* ---------- Partida online ---------- */
 #online label{display:grid;gap:4px;margin-top:10px;min-width:0}
-#online input{width:100%;max-width:24rem;min-width:0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+#online input{width:100%;max-width:24rem;min-width:0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
 #online p{overflow-wrap:anywhere}
 #online .btn{margin:0 6px 6px 0}
 
+/* ---------- Página de jogo ---------- */
+.play-heading{
+  max-width:none;margin:auto;padding:16px var(--pad) 0;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap
+}
+.play-heading a{color:var(--ink)}
+.play-layout{align-items:start;max-width:none}
+.play-controls{min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--gap)}
+.play-page .nav{justify-content:flex-start}
+.play-page .nav #th{margin-left:auto}
+.play-page #online h2,.play-page #panel h2{font-size:clamp(19px,2vw + 8px,24px)}
+.play-page #board svg{max-height:min(48vh,520px);margin-inline:auto}
+
+/* Mão ocupa toda a largura da tela de jogo */
+#player-hand{grid-column:1/-1;min-width:0}
+#player-hand .hand{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(164px,100%),1fr));
+  justify-items:center;overflow:visible;margin-bottom:0;padding:4px 0
+}
+#player-hand .card{--u:.82}
+
+/* ==========================================================
+   Telas grandes — notebook e PC
+   ========================================================== */
+@media(min-width:1200px){
+  .play-layout{grid-template-columns:minmax(0,1.25fr) minmax(360px,1fr);max-width:1600px;padding-inline:clamp(16px,2vw,32px)}
+  .play-heading{max-width:1600px;padding-inline:clamp(16px,2vw,32px)}
+  .play-page #board svg{max-height:min(58vh,600px)}
+  #player-hand .hand{grid-template-columns:repeat(auto-fit,minmax(176px,1fr))}
+  #player-hand .card{--u:.9}
+  .card.big{--u:1.5}
+}
+@media(min-width:1600px){
+  :root{--wrap:1440px}
+  body{font-size:18px}
+  .play-layout,.play-heading{max-width:1840px}
+  .play-page #board svg{max-height:min(62vh,680px)}
+  #player-hand .card{--u:1}
+  #player-hand .hand{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+}
+
+/* ==========================================================
+   Tablet deitado / notebook pequeno (861–1199px)
+   ========================================================== */
+@media(min-width:861px) and (max-width:1199px){
+  .play-layout{grid-template-columns:minmax(0,1.1fr) minmax(300px,1fr)}
+  #player-hand .card{--u:.78}
+}
+
+/* ==========================================================
+   Tablet em pé / celular grande (até 860px)
+   ========================================================== */
 @media(max-width:860px){
   main{grid-template-columns:minmax(0,1fr)}
   #board,#panel{min-width:0}
+  .play-controls{grid-row:1}
+  .play-page #board svg{max-height:min(40vh,340px)}
+  .nav a{margin:0 6px}
+  /* tablet em pé: cartas da galeria um pouco menores */
+  .gal .card{--u:.85}
 }
+
+/* ==========================================================
+   Celular (até 600px)
+   ========================================================== */
 @media(max-width:600px){
   section[id]{scroll-margin-top:110px}
   .nav{padding:8px 12px;gap:6px}
-  .nav nav{order:3;display:flex;flex:1 0 100%;gap:14px;overflow-x:auto;padding:5px 0;white-space:nowrap}
+  .nav nav{order:3;display:flex;flex:1 0 100%;gap:14px;overflow-x:auto;padding:5px 0;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .nav nav::-webkit-scrollbar{display:none}
   .nav a{margin:0}
+  .logo{font-size:19px}
   .hero{padding:40px 12px}
-  .sec{padding:30px 12px}
+  .hero .btn.cta{display:block;max-width:320px;margin:8px auto}
+  .sec{padding:28px 12px}
   main,.box{padding:10px}
   #board table{table-layout:fixed;font-size:12px}
   #board th,#board td{padding:5px 2px;overflow-wrap:anywhere}
@@ -109,50 +248,51 @@ footer{text-align:center;padding:30px;color:var(--mut);border-top:1px solid var(
   .hand{flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x proximity;padding:6px 2px 10px}
   .hand .card{flex:none;scroll-snap-align:start}
   .card.big{--u:1.15;max-width:100%}
-}
+  .gal .card{--u:.78}
+  .qbig{min-height:150px}
 
-.play-heading{
-  max-width:1200px;margin:auto;padding:16px 18px 0;
-  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap
-}
-.play-heading a{color:var(--ink)}
-.play-layout{align-items:start}
-.play-controls{min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
-.play-page .nav{justify-content:flex-start}
-.play-page .nav #th{margin-left:auto}
-.play-page #online h2,.play-page #panel h2{font-size:22px}
-.play-page #board svg{max-height:520px}
-@media(max-width:860px){
-  .play-controls{grid-row:1}
-  .play-page #board svg{max-height:360px}
-}
-@media(max-width:600px){
   .play-heading{padding:10px 12px 0}
   .play-heading h1{font-size:24px}
   .play-heading a{font-size:14px}
   .play-page section[id]{scroll-margin-top:64px}
   .play-page #online label{margin-top:6px}
   .play-page #online p:last-child:empty{display:none}
+  .play-page #board svg{max-height:min(34vh,300px)}
+
+  #player-hand .hand{grid-template-columns:repeat(auto-fit,minmax(min(132px,100%),1fr));overflow:visible;flex-wrap:wrap}
+  #player-hand .card{--u:.66}
 }
 
-/* A mão ocupa toda a extensão da tela de jogo. */
-.play-heading,.play-layout{max-width:none}
-.play-page #board svg{max-height:min(45vh,420px)}
-#player-hand{grid-column:1/-1;min-width:0}
-#player-hand .hand{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(min(164px,100%),1fr));
-  justify-items:center;
-  overflow:visible;
-  margin-bottom:0;
-  padding:4px 0;
+/* ==========================================================
+   Celular pequeno (até 400px)
+   ========================================================== */
+@media(max-width:400px){
+  .gal .card{--u:.7}
+  #player-hand .hand{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #player-hand .card{--u:.6}
+  .colors{gap:6px}
+  .btn{padding:10px 12px;font-size:14px}
 }
-#player-hand .card{--u:.82;max-width:100%}
-@media(max-width:860px){
-  .play-controls{grid-row:auto}
-  .play-page #board svg{max-height:min(38vh,320px)}
+
+/* ==========================================================
+   Celular deitado (pouca altura)
+   ========================================================== */
+@media(max-height:480px) and (orientation:landscape){
+  .nav{position:static}
+  .hero{padding:28px 16px}
+  .play-page #board svg{max-height:70vh}
+  #player-hand .hand{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+  #player-hand .card{--u:.6}
 }
-@media(max-width:600px){
-  #player-hand .hand{grid-template-columns:repeat(auto-fit,minmax(min(132px,100%),1fr))}
-  #player-hand .card{--u:.66}
+
+/* ==========================================================
+   Dispositivos de toque e acessibilidade
+   ========================================================== */
+@media(hover:none){
+  .gal .card:hover{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
 }

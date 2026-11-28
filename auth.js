@@ -1,4 +1,4 @@
-// Conta do site: botão na gaveta do menu + janela de login (e-mail/senha ou Google).
+// Conta do site: botão na gaveta do menu + janela de login (e-mail e senha).
 // Aparece sozinha ao abrir a página inicial (ou um link de sala) sem estar logado.
 const choicesAuth = (() => {
   const base = 'https://www.gstatic.com/firebasejs/11.10.0/';
@@ -10,17 +10,12 @@ const choicesAuth = (() => {
     'auth/weak-password':'Senha fraca: use pelo menos 6 caracteres.',
     'auth/invalid-email':'E-mail inválido.',
     'auth/missing-email':'Informe o e-mail.',
-    'auth/popup-closed-by-user':'Login com Google cancelado.',
-    'auth/cancelled-popup-request':'Login com Google cancelado.',
-    'auth/popup-blocked':'O navegador bloqueou a janela do Google. Libere pop-ups e tente de novo.',
     'auth/operation-not-allowed':'Esse método de login ainda não foi ativado no Firebase (Authentication › Método de login).',
     'auth/unauthorized-domain':'Este endereço do site não está autorizado no Firebase (Authentication › Configurações › Domínios autorizados).',
     'auth/too-many-requests':'Muitas tentativas. Aguarde um pouco e tente de novo.',
     'auth/network-request-failed':'Sem conexão. Verifique a internet.',
-    'auth/account-exists-with-different-credential':'Esse e-mail já tem conta com senha. Entre com e-mail e senha.',
-    'auth/operation-not-supported-in-this-environment':'Este navegador não permite o login com Google aqui. Abra o site no Chrome ou Safari (não dentro do WhatsApp/Instagram).',
     'auth/web-storage-unsupported':'O navegador está bloqueando cookies/armazenamento. Libere e tente de novo.',
-    'auth/internal-error':'Erro interno do login. Confira se o Google está ativado no Firebase e se o domínio está autorizado.',
+    'auth/internal-error':'Erro interno do login. Confira se o login por e-mail/senha está ativado no Firebase e se o domínio está autorizado.',
     'auth/invalid-api-key':'A chave do Firebase em firebase-config.js é inválida.',
     'auth/api-key-not-valid':'A chave do Firebase em firebase-config.js é inválida.'
   };
@@ -35,19 +30,34 @@ const choicesAuth = (() => {
   acct.id = 'acct';
   if (nav) nav.insertBefore(acct, $id('th'));
 
+  // Aviso fixo no canto: mostra quem está logado sem precisar abrir o menu.
+  const chip = document.createElement('button');
+  chip.id = 'acct-chip';
+  chip.type = 'button';
+  chip.dataset.a = 'in';
+  document.body.appendChild(chip);
+
+  function toast(text) {
+    const box = document.createElement('div');
+    box.className = 'toast';
+    box.setAttribute('role', 'status');
+    box.textContent = text;
+    document.body.appendChild(box);
+    setTimeout(() => box.remove(), 3800);
+  }
+
   const dlg = document.createElement('dialog');
   dlg.id = 'login-dlg';
   dlg.setAttribute('aria-labelledby', 'login-title');
   dlg.innerHTML = `<form id="login-form">
     <h2 id="login-title">Entrar no CHOICES</h2>
-    <p class="rules">Com uma conta você cria salas e joga online com outros usuários. O modo local não precisa de login.</p>
+    <p class="rules">Com uma conta (e-mail e senha) você cria salas e joga online com outros usuários. O modo local não precisa de login.</p>
     <label>E-mail <input id="login-email" type="email" autocomplete="email" required></label>
     <label>Senha <input id="login-pass" type="password" minlength="6" autocomplete="current-password" required></label>
     <label>Apelido (usado ao criar a conta) <input id="login-name" maxlength="14" autocomplete="nickname"></label>
     <p><button class="btn" type="submit">Entrar</button>
     <button class="btn alt" type="button" data-a="signup">Criar conta</button></p>
-    <p><button class="btn alt" type="button" data-a="google">Entrar com Google</button>
-    <button class="btn alt" type="button" data-a="reset">Esqueci a senha</button></p>
+    <p><button class="btn alt" type="button" data-a="reset">Esqueci a senha</button></p>
     <p role="status" id="login-status"></p>
     <p><button class="btn alt" type="button" data-a="close">Agora não, só jogar local</button></p>
   </form>`;
@@ -60,6 +70,10 @@ const choicesAuth = (() => {
     acct.innerHTML = user
       ? `<span class="acct-name">👤 ${safe(label())}</span><button class="btn alt" type="button" data-a="out">Sair da conta</button>`
       : `<button class="btn" type="button" data-a="in">Entrar / Criar conta</button>`;
+    chip.textContent = user ? '👤 ' + label() : 'Entrar';
+    chip.classList.toggle('on', !!user);
+    chip.dataset.a = user ? '' : 'in';
+    chip.disabled = !!user;
   }
   function changed() {
     paint();
@@ -80,7 +94,7 @@ const choicesAuth = (() => {
     catch (error) { status(MSG[error.code] || (error.code ? 'Não foi possível concluir (' + error.code + ').' : error.message)); }
     finally { busy = false; dlg.classList.remove('busy'); }
   }
-  const done = u => { user = u; $id('login-form').reset(); status(''); dlg.close(); changed(); };
+  const done = u => { user = u; $id('login-form').reset(); status(''); dlg.close(); changed(); toast('Você entrou como ' + label() + '.'); };
 
   const signIn = () => guard(async () => {
     await ready;
@@ -97,14 +111,6 @@ const choicesAuth = (() => {
     await mod.updateProfile(created.user, {displayName: (field('login-name') || email.split('@')[0]).slice(0, 14)});
     done(created.user);
   });
-  // A janela do Google precisa abrir direto do toque no botão: sem "await" antes (Safari e celulares bloqueiam).
-  const google = () => guard(async () => {
-    if (location.protocol === 'file:') throw Error('O login com Google não funciona com o arquivo aberto direto do computador. Abra pelo site publicado ou por http://localhost.');
-    if (!session) await ready;
-    const provider = new mod.GoogleAuthProvider();
-    provider.setCustomParameters({prompt: 'select_account'});
-    done((await mod.signInWithPopup(session, provider)).user);
-  });
   const reset = () => guard(async () => {
     await ready;
     const email = field('login-email');
@@ -117,6 +123,7 @@ const choicesAuth = (() => {
     await mod.signOut(session);
     user = null;
     changed();
+    toast('Você saiu da conta.');
   });
 
   document.addEventListener('click', event => {
@@ -125,7 +132,6 @@ const choicesAuth = (() => {
     if (action === 'in') open();
     if (action === 'out') signOut();
     if (action === 'signup') signUp();
-    if (action === 'google') google();
     if (action === 'reset') reset();
     if (action === 'close') dlg.close();
   });
@@ -145,6 +151,7 @@ const choicesAuth = (() => {
     auth.onAuthStateChanged(session, next => {
       if (next?.isAnonymous || next?.uid === user?.uid) return;
       user = next;
+      if (user && dlg.open) dlg.close();
       changed();
     });
     paint();
